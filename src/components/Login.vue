@@ -4,16 +4,16 @@
       <div class="avatar-box">
         <img src="../assets/img/logo.png" alt>
       </div>
-      <el-form ref="loginForm" :model="loginInfo">
-        <el-form-item>
-          <el-input v-model="loginInfo.userName"></el-input>
+      <el-form ref="loginForm" :model="loginInfo" :rules="loginRules">
+        <el-form-item prop="username">
+          <el-input v-model="loginInfo.username"></el-input>
         </el-form-item>
-        <el-form-item>
-          <el-input type="password" v-model="loginInfo.pwd"></el-input>
+        <el-form-item prop="password">
+          <el-input type="password" v-model="loginInfo.password"></el-input>
         </el-form-item>
         <el-row>
           <el-col :offset="15">
-            <el-button type="primary" @click="$router.push('/welcome')">提交</el-button>
+            <el-button type="primary" @click="login">提交</el-button>
             <el-button type="info">重置</el-button>
           </el-col>
         </el-row>
@@ -27,9 +27,31 @@ export default {
   data() {
     return {
       loginInfo: {
-        userName: 'admin',
-        pwd: 1234
+        username: '',
+        password: ''
+      },
+      loginRules: {
+        username: [
+          { required: true, message: '用户名必填', trigger: 'blur' },
+          { min: 3, max: 6, message: '长度 3~6 位', trigger: 'blur' }
+        ],
+        password: [{ required: true, message: '密码必填', trigger: 'blur' }]
       }
+    }
+  },
+  methods: {
+    login() {
+      this.$refs.loginForm.validate(async valid => {
+        if (valid) {
+          const { data: dt } = await this.$http.post('/login', this.loginInfo)
+          if (dt.meta.status !== 200) {
+            return this.$message.error(dt.meta.msg)
+          }
+          this.$message.success(dt.meta.msg)
+          sessionStorage.setItem('token', dt.data.token)
+          this.$router.push('/home')
+        }
+      })
     }
   }
 }
