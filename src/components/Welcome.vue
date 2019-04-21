@@ -2,7 +2,7 @@
   <el-container>
     <el-header>
       <div class="login-box">
-        <!-- <img src="" alt=""> -->
+        <img src="../assets/img/avatar.png" alt>
         <span>电商后台管理系统</span>
       </div>
       <el-button type="info" @click="quit">退出</el-button>
@@ -23,7 +23,7 @@
               <i class="iconfont icon-yonghu4"></i>
               <span>用户管理</span>
             </template>
-            <el-menu-item index="1-1">
+            <el-menu-item index="1-1" @click="$router.push('/users')">
               <i class="el-icon-menu"></i>
               <span>用户列表</span>
             </el-menu-item>
@@ -124,6 +124,7 @@ export default {
 .el-container {
   height: 100%;
   .el-header {
+    padding-left: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -132,7 +133,11 @@ export default {
     .login-box {
       display: flex;
       align-items: center;
+      img {
+        width: 50px;
+      }
       span {
+        padding-left: 10px;
         font-size: 22px;
         color: #fff;
       }
