@@ -1,20 +1,24 @@
 <template>
-  <div class="login-contanier">
+  <div class="login-contanier" id="app">
     <div class="login-box">
       <div class="avatar-box">
         <img src="../assets/img/logo.png" alt>
       </div>
       <el-form ref="loginForm" :model="loginInfo" :rules="loginRules">
         <el-form-item prop="username">
-          <el-input v-model="loginInfo.username"></el-input>
+          <el-input v-model="loginInfo.username">
+            <i slot="prefix" class="iconfont icon-yonghu"></i>
+          </el-input>
         </el-form-item>
         <el-form-item prop="password">
-          <el-input type="password" v-model="loginInfo.password"></el-input>
+          <el-input type="password" v-model="loginInfo.password">
+            <i slot="prefix" class="iconfont icon-mima"></i>
+          </el-input>
         </el-form-item>
         <el-row>
           <el-col :offset="15">
             <el-button type="primary" @click="login">提交</el-button>
-            <el-button type="info">重置</el-button>
+            <el-button type="info" @click="reset">重置</el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -27,8 +31,8 @@ export default {
   data() {
     return {
       loginInfo: {
-        username: '',
-        password: ''
+        username: 'admin',
+        password: '123456'
       },
       loginRules: {
         username: [
@@ -49,15 +53,21 @@ export default {
           }
           this.$message.success(dt.meta.msg)
           sessionStorage.setItem('token', dt.data.token)
-          this.$router.push('/home')
+          this.$router.push('/welcome')
         }
       })
+    },
+    reset() {
+      this.$refs.loginForm.resetFields()
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
+#app {
+  background-color: #2b4b6b;
+}
 .login-box {
   position: absolute;
   width: 450px;
