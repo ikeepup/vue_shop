@@ -10,7 +10,7 @@ import Users from '@/components/Users'
 Vue.use(Router)
 Vue.use(ELementUi)
 
-export default new Router({
+const router = new Router({
   routes: [
     { path: '/', redirect: '/login' },
     { path: '/login', component: Login },
@@ -24,3 +24,14 @@ export default new Router({
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  if (to.path !== '/login') {
+    if (!sessionStorage.getItem('token')) {
+      return next('/login')
+    }
+  }
+  next()
+})
+
+export default router

@@ -16,68 +16,17 @@
           :unique-opened="true"
           :collapse="isCollapse"
           :collapse-transition="false"
+          :router="true"
         >
-          <div class="toggle_bar" @click="toggle">|||</div>
-          <el-submenu index="1">
+          <div class="toggle_bar" @click="isCollapse=!isCollapse">|||</div>
+          <el-submenu :index="menu.id+''" v-for="(menu,i) in menuList" :key="menu.id">
             <template slot="title">
-              <i class="iconfont icon-yonghu4"></i>
-              <span>用户管理</span>
+              <i :class="['iconfont', iconList[i]]"></i>
+              <span>{{menu.authName}}</span>
             </template>
-            <el-menu-item index="1-1" @click="$router.push('/users')">
+            <el-menu-item v-for="submenu in menu.children" :index="submenu.path" :key="submenu.id">
               <i class="el-icon-menu"></i>
-              <span>用户列表</span>
-            </el-menu-item>
-          </el-submenu>
-          <el-submenu index="2">
-            <template slot="title">
-              <i class="iconfont icon-tijikongjian"></i>
-              <span>权限管理</span>
-            </template>
-            <el-menu-item index="2-1">
-              <i class="el-icon-menu"></i>
-              <span>角色列表</span>
-            </el-menu-item>
-            <el-menu-item index="2-2">
-              <i class="el-icon-menu"></i>
-              <span>权限列表</span>
-            </el-menu-item>
-          </el-submenu>
-          <el-submenu index="3">
-            <template slot="title">
-              <i class="iconfont icon-shangpin"></i>
-              <span>商品管理</span>
-            </template>
-            <el-menu-item index="3-1">
-              <i class="el-icon-menu"></i>
-              <span>商品列表</span>
-            </el-menu-item>
-            <el-menu-item index="3-2">
-              <i class="el-icon-menu"></i>
-              <span>分类参数</span>
-            </el-menu-item>
-            <el-menu-item index="3-3">
-              <i class="el-icon-menu"></i>
-              <span>商品分类</span>
-            </el-menu-item>
-          </el-submenu>
-          <el-submenu index="4">
-            <template slot="title">
-              <i class="iconfont icon-danju"></i>
-              <span>订单管理</span>
-            </template>
-            <el-menu-item index="4-1">
-              <i class="el-icon-menu"></i>
-              <span>订单列表</span>
-            </el-menu-item>
-          </el-submenu>
-          <el-submenu index="5">
-            <template slot="title">
-              <i class="iconfont icon-baobiao"></i>
-              <span>数据统计</span>
-            </template>
-            <el-menu-item index="5-1">
-              <i class="el-icon-menu"></i>
-              <span>数据报表</span>
+              <span>{{submenu.authName}}</span>
             </el-menu-item>
           </el-submenu>
         </el-menu>
@@ -91,6 +40,17 @@
 
 <script>
 export default {
+  created() {
+    this.$http
+      .get('/menus')
+      .then(res => {
+        this.menuList = res.data.data
+        console.dir(this.menuList)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  },
   methods: {
     quit() {
       this.$confirm('确定退出?', '提示')
@@ -102,14 +62,19 @@ export default {
         .catch(() => {
           this.$message.info('退出取消')
         })
-    },
-    toggle() {
-      this.isCollapse = !this.isCollapse
     }
   },
   data() {
     return {
-      isCollapse: false
+      isCollapse: false,
+      menuList: [],
+      iconList: [
+        'icon-yonghu4',
+        'icon-tijikongjian',
+        'icon-shangpin',
+        'icon-danju',
+        'icon-baobiao'
+      ]
     }
   },
   computed: {
@@ -158,6 +123,7 @@ export default {
           height: 25px;
           font-size: 12px;
           line-height: 25px;
+          user-select: none;
         }
       }
     }
