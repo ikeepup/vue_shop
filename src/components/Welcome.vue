@@ -45,7 +45,6 @@ export default {
       .get('/menus')
       .then(res => {
         this.menuList = res.data.data
-        console.dir(this.menuList)
       })
       .catch(err => {
         console.log(err)

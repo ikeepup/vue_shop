@@ -12,19 +12,31 @@
 
 <script>
 export default {
-  props: ['total'],
+  props: ['getTableData'],
+  async created() {
+    let { data: dt } = await this.getTableData(this.pagenum, this.pagesize)
+    this.total = dt.data.total
+    this.$emit('passData', dt)
+  },
   data() {
     return {
       pagenum: 1,
-      pagesize: 2
+      pagesize: 2,
+      total: 0
     }
   },
   methods: {
-    handleSizeChange(size) {
-      this.$emit('passSize', size)
+    async handleSizeChange(size) {
+      this.pagesize = size
+      let { data: dt } = await this.getTableData(this.pagenum, this.pagesize)
+      this.total = dt.data.total
+      this.$emit('passData', dt)
     },
-    handleCurrentChange(current) {
-      this.$emit('passCurrent', current)
+    async handleCurrentChange(current) {
+      this.pagenum = current
+      let { data: dt } = await this.getTableData(this.pagenum, this.pagesize)
+      this.total = dt.data.total
+      this.$emit('passData', dt)
     }
   }
 }

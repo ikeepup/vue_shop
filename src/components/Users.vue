@@ -21,12 +21,7 @@
           </el-table-column>
           <el-table-column prop label="操作"></el-table-column>
         </el-table>
-        <pagination
-          :getData="getuers"
-          @passSize="getSize"
-          @passCurrent="getCurrent"
-          :total="totalPage"
-        ></pagination>
+        <pagination :getTableData="getTableData" @passData="getDataFromPagination"></pagination>
       </div>
     </el-card>
   </div>
@@ -34,39 +29,26 @@
 
 <script>
 export default {
-  created() {
-    this.getuers(this.pagenum, this.pagesize)
-  },
   data() {
     return {
       tires: ['用户管理', '用户列表'],
-      totalPage: 0,
-      pagenum: 1,
-      pagesize: 2,
       userData: []
     }
   },
   methods: {
-    getuers(pagenum, pagesize) {
-      this.$http
-        .get('/users', {
-          params: { pagenum, pagesize }
-        })
-        .then(res => {
-          this.totalPage = res.data.data.total
-          this.userData = res.data.data.users
-        })
-    },
-    getSize(pagesize) {
-      this.pagesize = pagesize
-      this.getuers(this.pagenum, this.pagesize)
-    },
-    getCurrent(pagenum) {
-      this.pagenum = pagenum
-      this.getuers(this.pagenum, this.pagesize)
-    },
     onOff() {
       this.$message.success('修改状态成功')
+    },
+
+    async getTableData(pagenum, pagesize) {
+      return this.$http.get('/users', {
+        params: { pagenum, pagesize }
+      })
+    },
+
+    getDataFromPagination(dt) {
+      console.log(dt)
+      this.userData = dt.data.users
     }
   }
 }
