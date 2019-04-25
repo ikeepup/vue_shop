@@ -12,11 +12,9 @@
 
 <script>
 export default {
-  props: ['getTableData'],
+  props: ['getTableData', 'query'],
   async created() {
-    let { data: dt } = await this.getTableData(this.pagenum, this.pagesize)
-    this.total = dt.data.total
-    this.$emit('passData', dt)
+    this.refresh()
   },
   data() {
     return {
@@ -26,17 +24,30 @@ export default {
     }
   },
   methods: {
-    async handleSizeChange(size) {
-      this.pagesize = size
-      let { data: dt } = await this.getTableData(this.pagenum, this.pagesize)
+    async refresh() {
+      console.log(this.query)
+      let { data: dt } = await this.getTableData(
+        this.query,
+        this.pagenum,
+        this.pagesize
+      )
       this.total = dt.data.total
       this.$emit('passData', dt)
     },
+    async handleSizeChange(size) {
+      this.pagesize = size
+      this.refresh()
+    },
     async handleCurrentChange(current) {
       this.pagenum = current
-      let { data: dt } = await this.getTableData(this.pagenum, this.pagesize)
-      this.total = dt.data.total
-      this.$emit('passData', dt)
+      this.refresh()
+    }
+  },
+  watch: {
+    query: function(newValue) {
+      if (newValue === '') {
+        this.refresh()
+      }
     }
   }
 }
