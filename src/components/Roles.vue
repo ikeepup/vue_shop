@@ -4,60 +4,50 @@
     <el-card>
       <div>
         <el-row>
-          <el-button type="primary">添加角色</el-button>
+          <el-button type="primary" @click="addFormVisible=true">添加角色</el-button>
         </el-row>
-        <el-table :data="roleData" stripe style="width: 100%" border highlight-current-row>
-          <el-table-column type="expand" label="展开">
+        <el-table :data="roleData" stripe style="width: 100%" border>
+          <el-table-column type="expand">
             <template slot-scope="roles">
-              <div>
-                <el-row
-                  v-for="child in roles.row.childrens"
-                  :key="child.id"
-                  class="expand-row-tire1"
-                  type="flex"
-                  align="middle"
-                >
-                  <el-col :span="5">
-                    <transition name="el-zoom-in-center">
-                      <el-tag closable @close="removeRight(roles.row,child.id)">{{child.authName}}</el-tag>
-                    </transition>
-                    <i class="el-icon-caret-right"></i>
-                  </el-col>
-                  <el-col :span="19">
-                    <el-row
-                      v-for="grandChild in child.children"
-                      :key="grandChild.id"
-                      type="flex"
-                      align="middle"
-                      class="expand-row-tire2"
-                    >
-                      <el-col :span="6">
-                        <transition name="el-zoom-in-center">
-                          <el-tag
-                            closable
-                            type="success"
-                            @close="removeRight(roles.row, grandChild.id)"
-                          >{{grandChild.authName}}</el-tag>
-                        </transition>
-                        <i class="el-icon-caret-right"></i>
-                      </el-col>
-                      <el-col :span="18">
-                        <transition
-                          name="el-zoom-in-center"
-                          v-for="gGrandChild in grandChild.children"
-                          :key="gGrandChild.id"
-                        >
-                          <el-tag
-                            closable
-                            type="warning"
-                            @close="removeRight(roles.row, gGrandChild.id)"
-                          >{{gGrandChild.authName}}</el-tag>
-                        </transition>
-                      </el-col>
-                    </el-row>
-                  </el-col>
-                </el-row>
-              </div>
+              <el-row
+                v-for="child in roles.row.childrens"
+                :key="child.id"
+                class="expand-row-tire1"
+                type="flex"
+                align="middle"
+              >
+                <el-col :span="5">
+                  <el-tag closable @close="removeRight(roles.row,child.id)">{{child.authName}}</el-tag>
+                  <i class="el-icon-caret-right"></i>
+                </el-col>
+                <el-col :span="19">
+                  <el-row
+                    v-for="grandChild in child.children"
+                    :key="grandChild.id"
+                    type="flex"
+                    align="middle"
+                    class="expand-row-tire2"
+                  >
+                    <el-col :span="6">
+                      <el-tag
+                        closable
+                        type="success"
+                        @close="removeRight(roles.row, grandChild.id)"
+                      >{{grandChild.authName}}</el-tag>
+                      <i class="el-icon-caret-right"></i>
+                    </el-col>
+                    <el-col :span="18">
+                      <el-tag
+                        closable
+                        type="warning"
+                        @close="removeRight(roles.row, gGrandChild.id)"
+                        v-for="gGrandChild in grandChild.children"
+                        :key="gGrandChild.id"
+                      >{{gGrandChild.authName}}</el-tag>
+                    </el-col>
+                  </el-row>
+                </el-col>
+              </el-row>
             </template>
           </el-table-column>
           <el-table-column type="index" label="序号"></el-table-column>
@@ -101,13 +91,13 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-dialog title="修改权限" :visible.sync="editFormVisible" @close="handleClose">
+        <el-dialog title="修改权限" :visible.sync="editFormVisible">
           <el-form :model="chosenUser" ref="editFormRef" :rules="editFormRules">
             <el-form-item label="角色名称" label-width="100px" prop="roleName">
-              <el-input v-model.lazy="chosenUser.roleName" autocomplete="off"></el-input>
+              <el-input v-model="chosenUser.roleName" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item label="角色描述" label-width="100px" prop="roleDesc">
-              <el-input v-model.lazy="chosenUser.roleDesc" autocomplete="off"></el-input>
+              <el-input v-model="chosenUser.roleDesc" autocomplete="off"></el-input>
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
@@ -132,6 +122,24 @@
             <el-button type="primary" @click="roleChangeDone">确 定</el-button>
           </div>
         </el-dialog>
+        <el-dialog
+          title="添加角色"
+          :visible.sync="addFormVisible"
+          @close="$refs.addFormRef.resetFields()"
+        >
+          <el-form :model="newRole" ref="addFormRef" :rules="addFormRules">
+            <el-form-item label="角色名称" label-width="100px" prop="roleName">
+              <el-input v-model="newRole.roleName" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="角色描述" label-width="100px" prop="roleDesc">
+              <el-input v-model="newRole.roleDesc" autocomplete="off"></el-input>
+            </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="addFormVisible=false">取 消</el-button>
+            <el-button type="primary" @click="addUserDone">确 定</el-button>
+          </div>
+        </el-dialog>
       </div>
     </el-card>
   </div>
@@ -149,7 +157,9 @@ export default {
       rightsData: [],
       editFormVisible: false,
       roleChangeFormVisible: false,
+      addFormVisible: false,
       chosenUser: {},
+      newRole: { roleName: '', roleDesc: '' },
       idArray: [],
       editFormRules: {
         roleName: { required: true, message: '角色名必填', trigger: 'blur' }
@@ -157,6 +167,9 @@ export default {
       defaultProps: {
         children: 'children',
         label: 'authName'
+      },
+      addFormRules: {
+        roleName: { required: true, message: '角色名必填', trigger: 'blur' }
       }
     }
   },
@@ -165,24 +178,37 @@ export default {
       this.$http.get('/roles').then(res => {
         this.roleData = res.data.data
         this.roleData.forEach(item => {
-          item.childrens = item.children
+          this.$set(item, 'childrens', item.children)
           delete item.children
         })
       })
     },
-    handleClose() {},
     handleOpen() {
       this.$refs.tree.setCheckedKeys(this.idArray, true)
     },
+    // handleClose() {
+    //   this.$refs.addFormRef.resetFields()
+    // },
+    addUserDone() {
+      this.$http.post('roles', this.newRole).then(res => {
+        if (res.data.meta.status !== 201) {
+          return this.$message.error(res.data.meta.msg)
+        }
+        this.$message.success(res.data.meta.msg)
+        this.addFormVisible = false
+        this.getTableData()
+      })
+    },
     removeRight(role, rid) {
-      this.$confirm('确认删除这个权限么?', '提示')
-        .then(() => {
-          this.$http.delete(`roles/${role.id}/rights/${rid}`).then(res => {
+      this.$confirm('确认删除这个权限么?', '提示').then(() => {
+        this.$http
+          .delete(`roles/${role.id}/rights/${rid}`)
+          .then(res => {
             this.$message.success(res.data.meta.msg)
             role.childrens = res.data.data
           })
-        })
-        .catch(() => {})
+          .catch(() => {})
+      })
     },
     openEdit(id) {
       this.$http.get(`/roles/${id}`).then(res => {

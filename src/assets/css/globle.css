@@ -17,6 +17,7 @@ i.iconfont {
 }
 .el-table{
   font-size: 12px;
+  margin-top: 15px;
 }
 .el-card__body{
   padding: 20px;
