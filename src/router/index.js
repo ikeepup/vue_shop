@@ -6,6 +6,8 @@ import '../assets/css/globle.css'
 import ELementUi from 'element-ui'
 import HelloWorld from '@/components/HelloWorld'
 import Users from '@/components/Users'
+import Roles from '@/components/Roles'
+import Rights from '@/components/Rights'
 
 Vue.use(Router)
 Vue.use(ELementUi)
@@ -19,7 +21,9 @@ const router = new Router({
       component: Welcome,
       children: [
         { path: '/welcome', component: HelloWorld },
-        { path: '/users', component: Users }
+        { path: '/users', component: Users },
+        { path: '/roles', component: Roles },
+        { path: '/rights', component: Rights }
       ]
     }
   ]

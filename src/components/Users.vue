@@ -45,7 +45,7 @@
                 placement="top"
                 :enterable="false"
               >
-                <el-button type="primary" size="mini" @click="openEdit(scope.row)">
+                <el-button type="primary" size="mini" @click="openEdit(scope.row.id)">
                   <i class="el-icon-edit"></i>
                 </el-button>
               </el-tooltip>
@@ -148,8 +148,8 @@ export default {
       chosenUser: {},
       addFormVisible: false,
       editFormVisible: false,
-      query: '',
       roleChangeFormVisible: false,
+      query: '',
       newUserFormData: {
         username: '',
         password: '',
@@ -233,15 +233,17 @@ export default {
         }
       })
     },
-    openEdit(data) {
-      this.chosenUser = data
-      console.log(this.chosenUser)
+    openEdit(id) {
+      this.$http.get(`/users/${id}`).then(res => {
+        this.chosenUser = res.data.data
+      })
       this.editFormVisible = true
     },
     openRoleChange(data) {
       this.chosenUser = data
       this.$http.get('/roles').then(res => {
         this.roleData = res.data.data
+        console.log(this.roleData)
       })
       this.roleChangeFormVisible = true
     },
@@ -265,15 +267,17 @@ export default {
       })
     },
     delUser(id) {
-      this.$confirm('确定删除?', '删除用户').then(() => {
-        this.$http.delete(`users/${id}`).then(res => {
-          if (res.data.meta.status !== 200) {
-            return this.$message.error(res.data.meta.msg)
-          }
-          this.$message.success(res.data.meta.msg)
-          this.$refs.pagiRef.refresh()
+      this.$confirm('确定删除?', '删除用户')
+        .then(() => {
+          this.$http.delete(`users/${id}`).then(res => {
+            if (res.data.meta.status !== 200) {
+              return this.$message.error(res.data.meta.msg)
+            }
+            this.$message.success(res.data.meta.msg)
+            this.$refs.pagiRef.refresh()
+          })
         })
-      })
+        .catch(() => {})
     },
     roleChangeDone() {
       this.$refs.roleChangeFormRef.validate(valid => {
@@ -305,7 +309,6 @@ export default {
 <style lang="less" scoped>
 .el-card {
   .el-card__body {
-    padding: 20px;
     .el-table {
       margin-top: 15px;
     }

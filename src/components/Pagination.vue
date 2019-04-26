@@ -25,7 +25,6 @@ export default {
   },
   methods: {
     async refresh() {
-      console.log(this.query)
       let { data: dt } = await this.getTableData(
         this.query,
         this.pagenum,
